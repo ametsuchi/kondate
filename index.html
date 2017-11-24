@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html ng-app="app">
   <head>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta charset="UTF-8">
+    <title>献立のメモ</title>
     <link rel="stylesheet" href="https://cdn.rawgit.com/mblode/marx/master/css/marx.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
     <style>
@@ -42,16 +45,16 @@
           <input ng-model="d_text"><button type="button" ng-click="add_d()">+</button>
       </div>
 
+      <h3>Shopping List</h3>
+      <ul>
+          <li ng-repeat="s_row in data.shopping_list">{{s_row.text}}</li>
+      </ul>
+      <div>
+          <input ng-model="s_text"><button type="button" ng-click="add_s()">+</button>
+      </div>
+
     </main>
     <script>
-      // (function(){
-      //   // var now = new Date();
-      //   // var date_str = now.getFullYear() + '-' + now.getMonth() + '-' + now.getDate();
-      //   // document.getElementById('date').innerText = date_str + "(" + dayToStr(now.getDay()) +")";
-
-    
-      // }());
-
       var module = angular.module('app',[]);
       var now = new Date();
       var date_str = now.getFullYear() + '-' + now.getMonth() + '-' + now.getDate();
@@ -59,14 +62,15 @@
       module.controller('appController',function($scope){
         $scope.date = date_str + "(" + dayToStr(now.getDay()) +")";
 
-        $scope.data = {morning:[],lunch:[],dinner:[]};
+        $scope.data = {morning:[],lunch:[],dinner:[],shopping_list:[]};
 
         // localstrageからよみこみ
         readData();
 
         // click event
         // ---------------
-        // 全体的に3回も同じのかいてて冗長なのであとでなおす。。。。
+        // TODO:全体的に3回も同じのかいてて冗長なのであとでなおす。。。。
+        //　あとでmodule化する
         $scope.add_m = function(){
           $scope.data.morning.push({text:$scope.m_text});
           $scope.m_text = "";
@@ -81,6 +85,11 @@
           $scope.data.dinner.push({text:$scope.d_text});
           $scope.d_text = "";
           localStorage.setItem(date_str + '_dinner',objToJson($scope.data.dinner));
+        }
+        $scope.add_s = function(){
+          $scope.data.shopping_list.push({text:$scope.s_text});
+          $scope.s_text = "";
+          localStorage.setItem(date_str + '_shopping_list',objToJson($scope.data.shopping_list));
         }
 
         $scope.prev_date = function(){
@@ -104,7 +113,7 @@
             $scope.data.morning = [];
           }
           var d = localStorage.getItem(date_str + '_dinner');
-          if(m != null){
+          if(d != null){
             $scope.data.dinner = JSON.parse(d);
           }else{
             $scope.data.dinner = [];           
@@ -115,6 +124,13 @@
           }else{
             $scope.data.lunch = [];           
           }
+          var s = localStorage.getItem(date_str + '_shopping_list');
+            if(s != null){
+            $scope.data.shopping_list = JSON.parse(s);
+          }else{
+            $scope.data.shopping_list = [];           
+          }
+
         }
 
 
