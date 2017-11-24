@@ -13,9 +13,9 @@
   <body>
     <main ng-controller="appController">
       <h1>Write Menu Here!</h1>
-      <h2 id="date"></h2>
+      <h2 id="date">{{date}}</h2>
       <div>
-        <a href="#">⇐ prev date</a>|<a href="#">next date ⇒</a>
+        <a href="#" ng-click="prev_date()">⇐ prev date</a>|<a href="#" ng-click="next_date()">next date ⇒</a>
       </div>
 
       <h3>Morning</h3>
@@ -44,46 +44,95 @@
 
     </main>
     <script>
-      (function(){
-        var now = new Date();
-        var date_str = now.getFullYear() + '-' + now.getMonth() + '-' + now.getDate();
-        document.getElementById('date').innerText = date_str + "(" + dayToStr(now.getDay()) +")";
+      // (function(){
+      //   // var now = new Date();
+      //   // var date_str = now.getFullYear() + '-' + now.getMonth() + '-' + now.getDate();
+      //   // document.getElementById('date').innerText = date_str + "(" + dayToStr(now.getDay()) +")";
 
     
-        function dayToStr(day_number){
-          var days = ['日','月','火','水','木','金','土'];
-          return days[day_number];
-        }
-      }());
+      // }());
 
       var module = angular.module('app',[]);
+      var now = new Date();
+      var date_str = now.getFullYear() + '-' + now.getMonth() + '-' + now.getDate();
       
       module.controller('appController',function($scope){
-        $scope.data = {morning:[{text:'バナナ'}],lunch:[{text:'りんご'}],dinner:[{text:'ごりら'}]};
+        $scope.date = date_str + "(" + dayToStr(now.getDay()) +")";
 
-        // TODO:localstrageから読み込み
+        $scope.data = {morning:[],lunch:[],dinner:[]};
 
+        // localstrageからよみこみ
+        readData();
 
         // click event
         // ---------------
-        // 全体的に冗長なのであとでなおす。。。。
+        // 全体的に3回も同じのかいてて冗長なのであとでなおす。。。。
         $scope.add_m = function(){
-          // TODO:localstrageに書き込み
           $scope.data.morning.push({text:$scope.m_text});
           $scope.m_text = "";
+          localStorage.setItem(date_str + '_morning',objToJson($scope.data.morning));
         }
         $scope.add_l = function(){
-          // TODO:localstrageに書き込み
           $scope.data.lunch.push({text:$scope.l_text});
           $scope.l_text = "";
+          localStorage.setItem(date_str + '_lunch',objToJson($scope.data.lunch));
         }
         $scope.add_d = function(){
-          // TODO:localstrageに書き込み
           $scope.data.dinner.push({text:$scope.d_text});
           $scope.d_text = "";
+          localStorage.setItem(date_str + '_dinner',objToJson($scope.data.dinner));
         }
 
+        $scope.prev_date = function(){
+          now.setDate(now.getDate() -1);
+          date_str = now.getFullYear() + '-' + now.getMonth() + '-' + now.getDate();
+          $scope.date = date_str + "(" + dayToStr(now.getDay()) +")";
+          readData();
+        }
+        $scope.next_date = function(){
+          now.setDate(now.getDate() +1);
+          date_str = now.getFullYear() + '-' + now.getMonth() + '-' + now.getDate();
+          $scope.date = date_str + "(" + dayToStr(now.getDay()) +")";
+          readData();
+        }
+
+        function readData(){
+          var m = localStorage.getItem(date_str + '_morning');
+          if(m != null){
+            $scope.data.morning = JSON.parse(m);
+          }else{
+            $scope.data.morning = [];
+          }
+          var d = localStorage.getItem(date_str + '_dinner');
+          if(m != null){
+            $scope.data.dinner = JSON.parse(d);
+          }else{
+            $scope.data.dinner = [];           
+          }
+          var l = localStorage.getItem(date_str + '_lunch');
+            if(l != null){
+            $scope.data.lunch = JSON.parse(l);
+          }else{
+            $scope.data.lunch = [];           
+          }
+        }
+
+
       });
+      function objToJson(obj){
+        if(!Array.isArray(obj)){
+          return "";
+        }
+        var arry = [];
+        for(var i = 0;i < obj.length;i++){
+          arry.push({text: obj[i].text});
+        }
+        return JSON.stringify(arry);
+      }
+      function dayToStr(day_number){
+          var days = ['日','月','火','水','木','金','土'];
+          return days[day_number];
+      }
     </script>
   </body>
 </html>  
