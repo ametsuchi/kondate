@@ -1,1 +1,1 @@
-# 献立のメモをlocalstrateにかいていく
+# 献立のメモをlocalstrageにかいていく
