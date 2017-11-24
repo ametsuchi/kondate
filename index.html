@@ -11,6 +11,9 @@
       textarea{
         width: 80%;
       }
+      footer{
+        margin-top:60px;
+      }
     </style>
   </head>
   <body>
@@ -52,9 +55,11 @@
       <div>
           <input ng-model="s_text"><button type="button" ng-click="add_s()">+</button>
       </div>
-
     </main>
-    <script>
+    <footer>
+      
+    </footer>
+  <script>
       var module = angular.module('app',[]);
       var now = new Date();
       var date_str = now.getFullYear() + '-' + now.getMonth() + '-' + now.getDate();
