@@ -11,36 +11,35 @@
     </style>
   </head>
   <body>
-    <main ng-controller="textController">
+    <main ng-controller="appController">
       <h1>Write Menu Here!</h1>
       <h2 id="date"></h2>
-      
       <div>
         <a href="#">⇐ prev date</a>|<a href="#">next date ⇒</a>
       </div>
 
       <h3>Morning</h3>
       <ul>
-        <li></li>
+        <li ng-repeat="m_row in data.morning">{{m_row.text}}</li>
       </ul>
       <div>
-        <input><button type="button">+</button>
+        <input ng-model="m_text"><button type="button" ng-click="add_m()">+</button>
       </div>
 
-      <h3>Luanch</h3>
+      <h3>Lunch</h3>
       <ul>
-        <li></li>
+        <li ng-repeat="l_row in data.lunch">{{l_row.text}}</li>
       </ul>
       <div>
-        <input><button type="button">+</button>
+          <input ng-model="l_text"><button type="button" ng-click="add_l()">+</button>
       </div>
 
       <h3>Dinner</h3>
       <ul>
-        <li></li>
+          <li ng-repeat="d_row in data.dinner">{{d_row.text}}</li>
       </ul>
       <div>
-        <input><button type="button">+</button>
+          <input ng-model="d_text"><button type="button" ng-click="add_d()">+</button>
       </div>
 
     </main>
@@ -49,7 +48,7 @@
         var now = new Date();
         var date_str = now.getFullYear() + '-' + now.getMonth() + '-' + now.getDate();
         document.getElementById('date').innerText = date_str + "(" + dayToStr(now.getDay()) +")";
-        
+
     
         function dayToStr(day_number){
           var days = ['日','月','火','水','木','金','土'];
@@ -57,6 +56,34 @@
         }
       }());
 
+      var module = angular.module('app',[]);
+      
+      module.controller('appController',function($scope){
+        $scope.data = {morning:[{text:'バナナ'}],lunch:[{text:'りんご'}],dinner:[{text:'ごりら'}]};
+
+        // TODO:localstrageから読み込み
+
+
+        // click event
+        // ---------------
+        // 全体的に冗長なのであとでなおす。。。。
+        $scope.add_m = function(){
+          // TODO:localstrageに書き込み
+          $scope.data.morning.push({text:$scope.m_text});
+          $scope.m_text = "";
+        }
+        $scope.add_l = function(){
+          // TODO:localstrageに書き込み
+          $scope.data.lunch.push({text:$scope.l_text});
+          $scope.l_text = "";
+        }
+        $scope.add_d = function(){
+          // TODO:localstrageに書き込み
+          $scope.data.dinner.push({text:$scope.d_text});
+          $scope.d_text = "";
+        }
+
+      });
     </script>
   </body>
 </html>  
