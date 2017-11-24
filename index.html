@@ -14,6 +14,18 @@
       footer{
         margin-top:60px;
       }
+      .delete{
+        margin-right: 20px;
+        border-radius: 10px;
+        background: #d9534e;
+        padding:0;
+        width: 20px;
+        height: 20px;
+        font-size:4px;
+      }
+      .edit_div{
+        margin-top:20px;
+      }
     </style>
   </head>
   <body>
@@ -26,7 +38,7 @@
 
       <h3>Morning</h3>
       <ul>
-        <li ng-repeat="m_row in data.morning">{{m_row.text}}</li>
+        <li ng-repeat="m_row in data.morning"><button class="delete" ng-show="delete_mode" id="morning_{{$index}}" ng-click="delete($event)">×</button>{{m_row.text}}</li>
       </ul>
       <div>
         <input ng-model="m_text"><button type="button" ng-click="add_m()">+</button>
@@ -34,7 +46,7 @@
 
       <h3>Lunch</h3>
       <ul>
-        <li ng-repeat="l_row in data.lunch">{{l_row.text}}</li>
+        <li ng-repeat="l_row in data.lunch"><button class="delete" ng-show="delete_mode" id="lunch_{{$index}}" ng-click="delete($event)">×</button>{{l_row.text}}</li>
       </ul>
       <div>
           <input ng-model="l_text"><button type="button" ng-click="add_l()">+</button>
@@ -42,7 +54,7 @@
 
       <h3>Dinner</h3>
       <ul>
-          <li ng-repeat="d_row in data.dinner">{{d_row.text}}</li>
+          <li ng-repeat="d_row in data.dinner"><button class="delete" ng-show="delete_mode" id="dinner_{{$index}}" ng-click="delete($event)">×</button>{{d_row.text}}</li>
       </ul>
       <div>
           <input ng-model="d_text"><button type="button" ng-click="add_d()">+</button>
@@ -50,10 +62,13 @@
 
       <h3>Shopping List</h3>
       <ul>
-          <li ng-repeat="s_row in data.shopping_list">{{s_row.text}}</li>
+          <li ng-repeat="s_row in data.shoppinglist">{{s_row.text}}<button class="delete" ng-show="delete_mode" id="shoppinglist_{{$index}}" ng-click="delete($event)">×</button></li>
       </ul>
       <div>
           <input ng-model="s_text"><button type="button" ng-click="add_s()">+</button>
+      </div>
+      <div class="edit_div">
+        <button ng-click="toggle_delete_mode()">{{mode_label}}</button>
       </div>
     </main>
     <footer>
@@ -65,9 +80,11 @@
       var date_str = now.getFullYear() + '-' + now.getMonth() + '-' + now.getDate();
       
       module.controller('appController',function($scope){
+        $scope.delete_mode = false;
+        $scope.mode_label = "編集モードにする";
         $scope.date = date_str + "(" + dayToStr(now.getDay()) +")";
 
-        $scope.data = {morning:[],lunch:[],dinner:[],shopping_list:[]};
+        $scope.data = {morning:[],lunch:[],dinner:[],shoppinglist:[]};
 
         // localstrageからよみこみ
         readData();
@@ -92,9 +109,9 @@
           localStorage.setItem(date_str + '_dinner',objToJson($scope.data.dinner));
         }
         $scope.add_s = function(){
-          $scope.data.shopping_list.push({text:$scope.s_text});
+          $scope.data.shoppinglist.push({text:$scope.s_text});
           $scope.s_text = "";
-          localStorage.setItem(date_str + '_shopping_list',objToJson($scope.data.shopping_list));
+          localStorage.setItem(date_str + '_shoppinglist',objToJson($scope.data.shoppinglist));
         }
 
         $scope.prev_date = function(){
@@ -108,6 +125,22 @@
           date_str = now.getFullYear() + '-' + now.getMonth() + '-' + now.getDate();
           $scope.date = date_str + "(" + dayToStr(now.getDay()) +")";
           readData();
+        }
+
+        $scope.delete = function($event){
+          var params = $event.target.id.split('_');
+          $scope.data[params[0]].splice(params[1],1);
+          localStorage.setItem(date_str + '_' + params[0],objToJson($scope.data[params[0]]));
+        }
+
+        $scope.toggle_delete_mode = function(){
+          if($scope.delete_mode){
+            $scope.delete_mode = false;
+            $scope.mode_label = "編集モードにする";
+          }else{
+            $scope.delete_mode = true;
+            $scope.mode_label = "編集モードを終了する";
+          }
         }
 
         function readData(){
@@ -129,11 +162,11 @@
           }else{
             $scope.data.lunch = [];           
           }
-          var s = localStorage.getItem(date_str + '_shopping_list');
+          var s = localStorage.getItem(date_str + '_shoppinglist');
             if(s != null){
-            $scope.data.shopping_list = JSON.parse(s);
+            $scope.data.shoppinglist = JSON.parse(s);
           }else{
-            $scope.data.shopping_list = [];           
+            $scope.data.shoppinglist = [];           
           }
 
         }
